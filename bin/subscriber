@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH.unshift File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
+require 'subscriber'
+
+subscriber = Subscriber.new
+
+trap :INT do
+  subscriber.stop
+end
+
+subscriber.start
+
