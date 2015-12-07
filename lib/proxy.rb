@@ -1,34 +1,14 @@
-require 'ffi-rzmq'
+require 'ov_service/zmq/proxy'
 
 class Proxy
-
-  def initialize
-    #@context = ZMQ::Context.new
-  end
-
+  include OvService::Zmq::Proxy
   def stop
-    puts 'Shutting down the proxy'
-    @proxy[:router].setsockopt(ZMQ::LINGER, 1)
-    @proxy[:router].close
-    @proxy[:dealer].setsockopt(ZMQ::LINGER, 1)
-    @proxy[:dealer].close
-    @context.terminate
+    stop_proxy
   end
 
   def start
     puts "Starting the proxy..."
-    @context = ZMQ::Context.new
-
-    @proxy = Thread.new do
-      Thread.current[:router] = @context.socket(ZMQ::ROUTER)
-      Thread.current[:router].bind('tcp://*:5559')
-
-      Thread.current[:dealer] = @context.socket(ZMQ::DEALER)
-      Thread.current[:dealer].bind('tcp://*:5560')
-
-      poller = ZMQ::Proxy.new(Thread.current[:router], Thread.current[:dealer])
-    end
-    @proxy.join
+    start_proxy('tcp://127.0.0.1:5559', 'tcp://127.0.0.1:5560')
   end
 
 end
