@@ -8,33 +8,30 @@ class Subscriber
   end
 
   def start
-    puts 'Starting subscribers'
     options = {
-      :uri => 'tcp://127.0.0.1:5555',
-      :type => ZMQ::SUB,
-      :count => 5,
-      :sockopts => [
-        :option => ZMQ::SUBSCRIBE,
-        :value => 'Heartbeat'
-      ]
+      :sockets => {
+        :sub => {
+          :uri => 'tcp://127.0.0.1:5555',
+          :type => ZMQ::SUB,
+          :sockopts => [
+            :option => ZMQ::SUBSCRIBE,
+            :value => 'Heartbeat'
+          ]
+        }
+      },
+      :workers => 5
     }
-    start_foreman(options) do |socket|
-      run_loop(socket)
+    start_foreman(options) do |sockets|
+      run_loop(sockets)
     end
-    @subscribers.each(&:join)
-    stop
   end
 
-  def run_loop(socket)
+  def run_loop(sockets)
     loop do
-      topic = ''
-      message = ''
-      rc = socket.recv_string(topic)
-      break if error_check(rc)
-      rc = socket.recv_string(message) if socket.more_parts?
+      rc = sockets[:sub].recv_strings(messages = [])
       break if error_check(rc)
 
-      puts "#{Thread.current[:name]}: Incoming #{message}"
+      log("#{Thread.current}: Incoming #{messages[1]}")
     end
   end
 

@@ -9,26 +9,29 @@ class Publisher
   end
 
   def start
-    puts 'Starting publisher'
     options = {
-      :uri => 'tcp://127.0.0.1:5555',
-      :type => ZMQ::PUB,
-      :count => 1,
-      :bind => true
+      :sockets => {
+        :pub => {
+          :uri => 'tcp://127.0.0.1:5555',
+          :type => ZMQ::PUB,
+          :bind => true
+        }
+      },
+      :workers => 1
     }
-    start_foreman(options) do |socket|
-      run_loop(socket)
+    start_foreman(options) do |sockets|
+      run_loop(sockets)
     end
   end
 
-  def run_loop(socket)
+  def run_loop(sockets)
     loop do
       log('Sending heartbeat')
       strings = [
         'Heartbeat',
         "Heartbeat from: #{Thread.current}"
       ]
-      rc = socket.send_strings(strings, ZMQ::SNDMORE)
+      rc = sockets[:pub].send_strings(strings)
       break if error_check(rc)
 
       sleep(2)
