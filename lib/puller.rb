@@ -9,18 +9,22 @@ class Puller
 
   def start
     options = {
-      :uri => 'tcp://127.0.0.1:5556',
-      :type => ZMQ::PULL,
-      :count => 1
+      :sockets => {
+        :pull => {
+          :uri => 'tcp://127.0.0.1:5556',
+          :type => ZMQ::PULL
+        }
+      },
+      :workers => 1
     }
-    start_foreman(options) do |socket|
-      run_loop(socket)
+    start_foreman(options) do |sockets|
+      run_loop(sockets)
     end
   end
 
-  def run_loop(socket)
+  def run_loop(sockets)
     loop do
-      rc = socket.recv_strings(responses = [])
+      rc = sockets[:pull].recv_strings(responses = [])
       break if error_check(rc)
       log("Received '#{responses}'")
     end

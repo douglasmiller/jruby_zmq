@@ -9,21 +9,27 @@ class Requester
 
   def start
     options = {
-      :uri => 'tcp://127.0.0.1:5559',
-      :type => ZMQ::REQ,
-      :count => 5
+      :sockets => {
+        :req => {
+          :uri => 'tcp://127.0.0.1:5559',
+          :type => ZMQ::REQ
+        }
+      },
+      :workers => 5
     }
-    start_foreman(options) do |socket|
-      run_loop(socket)
+    start_foreman(options) do |sockets|
+      run_loop(sockets)
     end
   end
 
-  def run_loop(socket)
+  def run_loop(sockets)
     loop do
-      rc = socket.send_string("Request from: #{Thread.current}")
+      puts 'requesting?'
+      rc = sockets[:req].send_string("Request from: #{Thread.current}")
       break if error_check(rc)
 
-      rc = socket.recv_string(response = '')
+      puts 'reading?'
+      rc = sockets[:req].recv_string(response = '')
       break if error_check(rc)
       log("Received '#{response}'")
       sleep(rand(10))

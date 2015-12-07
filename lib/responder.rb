@@ -11,24 +11,28 @@ class Responder
   end
 
   def start
-    start_proxy('tcp://127.0.0.1:5559', 'tcp://127.0.0.1:5560', 'tcp://127.0.0.1:5556')
+    start_proxy('tcp://127.0.0.1:5559', 'tcp://127.0.0.1:5560')
     options = {
-      :uri => 'tcp://127.0.0.1:5560',
-      :type => ZMQ::REP,
-      :count => 5
+      :sockets => {
+        :rep => {
+          :uri => 'tcp://127.0.0.1:5560',
+          :type => ZMQ::REP
+        }
+      },
+      :workers => 5
     }
-    start_foreman(options) do |socket|
-      run_loop(socket)
+    start_foreman(options) do |sockets|
+      run_loop(sockets)
     end
   end
 
-  def run_loop(socket)
+  def run_loop(sockets)
     loop do
-      rc = socket.recv_string(message = '')
+      rc = sockets[:rep].recv_string(message = '')
       break if error_check(rc)
       log("Incoming '#{message}'")
 
-      rc = socket.send_string("Response from: #{Thread.current}")
+      rc = sockets[:rep].send_string("Response from: #{Thread.current}")
       break if error_check(rc)
     end
   end

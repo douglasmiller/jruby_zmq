@@ -9,20 +9,24 @@ class Pusher
 
   def start
     options = {
-      :uri => 'tcp://127.0.0.1:5556',
-      :type => ZMQ::PUSH,
-      :count => 1,
-      :bind => true
+      :sockets => {
+        :push => {
+          :uri => 'tcp://127.0.0.1:5556',
+          :type => ZMQ::PUSH,
+          :bind => true
+        }
+      },
+      :workers => 1
     }
-    start_foreman(options) do |socket|
-      run_loop(socket)
+    start_foreman(options) do |sockets|
+      run_loop(sockets)
     end
   end
 
-  def run_loop(socket)
+  def run_loop(sockets)
     loop do
       log('Sending pulse')
-      rc = socket.send_string('Pulse')
+      rc = sockets[:push].send_string('Pulse')
       break if error_check(rc)
       sleep(rand(5))
     end
