@@ -11,11 +11,11 @@ class Responder
   end
 
   def start
-    start_proxy('tcp://127.0.0.1:5559', 'tcp://127.0.0.1:5560')
+    start_proxy('tcp://127.0.0.1:5559', 'inproc://workers')
     options = {
       :sockets => {
         :rep => {
-          :uri => 'tcp://127.0.0.1:5560',
+          :uri => 'inproc://workers',
           :type => ZMQ::REP
         }
       },
