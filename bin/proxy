@@ -2,13 +2,13 @@
 Thread.abort_on_exception = true
 
 $LOAD_PATH.unshift File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
-require 'publisher'
+require 'proxy'
 
-publisher = Publisher.new
+proxy = Proxy.new
 
 trap :INT do
-  publisher.stop
+  proxy.stop
 end
 
-publisher.start
+proxy.start
 

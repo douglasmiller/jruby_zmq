@@ -1,7 +1,6 @@
 require 'ov_service/zmq/foreman'
 
-class Subscriber
-  include OvService::Zmq::Foreman
+class Subscriberx
 
   def stop
     stop_foreman
@@ -29,10 +28,8 @@ class Subscriber
     loop do
       topic = ''
       message = ''
-      rc = socket.recv_string(topic)
-      break if error_check(rc)
-      rc = socket.recv_string(message) if socket.more_parts?
-      break if error_check(rc)
+      socket.recv_string(topic)
+      socket.recv_string(message) if socket.more_parts?
 
       puts "#{Thread.current[:name]}: Incoming #{message}"
     end

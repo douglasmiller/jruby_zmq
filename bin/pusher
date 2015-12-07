@@ -2,13 +2,13 @@
 Thread.abort_on_exception = true
 
 $LOAD_PATH.unshift File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
-require 'publisher'
+require 'pusher'
 
-publisher = Publisher.new
+pusher = Pusher.new
 
 trap :INT do
-  publisher.stop
+  pusher.stop
 end
 
-publisher.start
+pusher.start
 

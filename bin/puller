@@ -1,13 +1,14 @@
 #!/usr/bin/env ruby
+Thread.abort_on_exception = true
 
 $LOAD_PATH.unshift File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
-require 'subscriber'
+require 'puller'
 
-subscriber = Subscriber.new
+puller = Puller.new
 
 trap :INT do
-  subscriber.stop
+  puller.stop
 end
 
-subscriber.start
+puller.start
 
