@@ -24,11 +24,9 @@ class Requester
 
   def run_loop(sockets)
     loop do
-      puts 'requesting?'
       rc = sockets[:req].send_string("Request from: #{Thread.current}")
       break if error_check(rc)
 
-      puts 'reading?'
       rc = sockets[:req].recv_string(response = '')
       break if error_check(rc)
       log("Received '#{response}'")

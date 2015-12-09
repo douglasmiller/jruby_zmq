@@ -24,6 +24,7 @@ class Puller
 
   def run_loop(sockets)
     loop do
+      sleep(rand(5))
       rc = sockets[:pull].recv_strings(responses = [])
       break if error_check(rc)
       log("Received '#{responses}'")

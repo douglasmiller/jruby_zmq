@@ -32,6 +32,8 @@ class Responder
       break if error_check(rc)
       log("Incoming '#{message}'")
 
+      sleep(10)
+
       rc = sockets[:rep].send_string("Response from: #{Thread.current}")
       break if error_check(rc)
     end

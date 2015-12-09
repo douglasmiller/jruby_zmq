@@ -76,7 +76,9 @@ module OvService
           yield(sockets)
 
           log('Death comes to us all; we can only choose how to face it when it comes.')
-          Thread.current[:sockets].each(&:close)
+          Thread.current[:sockets].each do |key, socket|
+            socket.close
+          end
         end
       end
 
